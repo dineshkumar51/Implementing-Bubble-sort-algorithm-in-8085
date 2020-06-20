@@ -1,0 +1,201 @@
+# Implementing-Bubble-sort-algorithm-in-8085
+
+
+ 
+IMPLEMENTING BUBBLE SORT
+ALGORITHM IN 8085 
+
+
+
+;Bubble sort
+
+;Elements to be sorted are stored from 2200h to 2209h
+         
+           MVI B,09h        ;1.initializing loop1
+START: LXI H,2200h.    ;2.Loading the HL pair with base address (2200h)
+           MVI C,09h        ;3.initializing loop2
+BACK:  MOV A,M.         ;4.Moving the content of adddress stored in HL pair to A-register 
+           INX H               ;5.Moving to next address(incrementing HL pair)
+           CMP M.            ;6.compare the content of address in HL pair with A-register
+          JZ SKIP             ;7.jump to skip when the two numbers are equal
+          JC SKIP             ;8.jump to skip when value in (A)<content of (M)
+          MOV D,M           ;9.  
+          MOV M,A.          ;10.
+          DCX H               ;11.
+          MOV M,D           ;12.
+          INX H                ;13. code for swaping the two numbers using D register 
+SKIP:  DCR C               ;14.decrementing the control variable of loop1
+        JNZ BACK           ;15.jump to BACK if the condition is satisfied 
+        DCR B                ;16.decrementing the control variable of loop2
+       JNZ START          ;17.jump to START if the condition is satisfied
+
+
+
+
+
+
+;sum of even numbers
+
+After sorting the elements this code  finds the sum of even numbers and stores it in location     220Bh (if the lsb of a number is 1 then its odd if the lsb is 0 then its even)  
+
+       MVI C,0Ah         ;1.initializing loop
+       MVI B,00h         ;2.initialing B to 0 as we are to store the sum during every iteration in B
+       LXI H,2200h      ;3.initialing HL pair with starting address of the array of elements 
+BACK1: MOV A,M       ;4.moving the content of address in HL pair to A
+      ANI 01h             ;5.ANDing the content A register with (00000001) so that we can find the LSB
+      JNZ SKIP1        ;6.jump to skip1 if the condition is satisfied
+        MOV A,B.       ;6.Coping the content of B to A 
+        ADD M           ;7.ADD the content of A with content at the address stored in HL pair
+        MOV B,A        ;8.moving the result back into B-register
+SKIP1: INX H          ;9.incrementing the content of HL pair
+        DCR C           ;10.decrementing the control variable of the loop
+        JNZ BACK1    ;11.Jump to BACK1 if the condition is satisfied
+        STA 220Bh     ;12.finally moving the result(sum) to the memory location 220Bh
+
+;sum of ODD numbers
+; Same as sum of even numbers only line 6 and line 12  is changed
+       
+       MVI C,0Ah
+       MVI B,00h
+       LXI H,2200h
+BACK2: MOV A,M
+       ANI 01h
+       JZ SKIP2
+       MOV A,B
+       ADD M
+       MOV B,A
+SKIP2: INX H
+       DCR C
+       JNZ BACK2
+       MOV A,B
+       STA 220Dh
+
+
+
+INSTRUCTIONS USED :
+
+1.MVI 
+syntax: MVI  reg,  8-BIT  Immediate value(hex value)
+eg: MVI B,09h
+Moves the value 90h to the register B
+
+
+2.MOV
+syntax: MOV  reg1,  reg2  (or)  MOV  reg1, M (or) MOV  M, reg1. 
+(M-Address of the memory location where the content to be moved is present M always takes the content of HL -register as the address,so before using M as the operand we should LOAD HL-register pair with required address).
+
+eg: MOV B,D
+Content of D register is moved to B register
+
+eg1: LXI H,2200h
+       MOV A,M
+Content of memory location M(2200h) is moved to  A register 
+(A register is also called as ACCUMULATOR it is a special kind register in 8085.To perform any operation one of the operands must be moved to A-register and after the execution of the operation the result will be available in A-register)
+
+eg2: LXI H,3457h
+       MOV M,B
+Content of register B is copied to memory location M(3457h)
+
+
+3.STA 
+syntax: STA  address
+This instructions is specially for A-register as most of the times the result is available in A-register this instruction is used directly copy the content of A-register to specified memory location
+eg: STA 2200h
+Moves the content of A-register to 2200h-location
+
+4.DCX 
+syntax: DCX reg16(register pair)
+This instructions decrements the register pair’s content by one bit 
+
+eg: LXI H,2201h
+     DCX H
+After the execution of this instruction value in HL(pair) will be 2200h
+
+
+
+5.INX
+syntax: INX reg16(register pair)
+This instructions increments the register pair’s content by one bit 
+
+eg: LXI H,2201h
+     INX H
+After the execution of this instruction value in HL(pair) will be 2202h
+
+6.DCR(same as DCX but used only for 8bit registers)
+syntax: DCR reg8(8-bit register)
+This instructions decrements the register content by one bit 
+
+eg: MOV B,09h
+     DCR H
+After the execution of this instruction value B-register will be 08h
+
+
+
+7.ADD
+syntax: ADD reg8
+This instruction adds the content of A-register with specified register 
+
+eg: ADD B
+This instruction adds the content of A-register with B-register and puts the result in A
+
+
+8.ANI
+syntax: ANI  immediate value
+This instruction performs logical AND operation on A-register with given immediate value
+
+eg: ANI 08h
+This instruction performs logical AND operation on A-register with 08h(10000000).
+
+
+
+9.CMP 
+syntax: CMP reg8(or) CMP M
+This instruction compares the content of the specified register or a specified address with A-register and modifies the Flag register contents respectively.
+
+CMP instructions internally performs a subtraction with out modifying the A-register it only effects the flag register. eg if two numbers are equal zero flag will be set ,if second number is greater than first number then barrow will take place ,so carry bit will set  
+
+
+eg: MVI A,09h
+     MVI B,08h
+     CMP B
+
+This instruction compares the content of B with A and modifies the flag register.
+
+
+
+10.JNZ/JZ/JC(used for implementing conditional branch (or) loop)
+Flag register(before going to this instruction we should about flag register. Flag register is a special(8-bit) register in 8085 which shows the status of the current operation, for eg: If the current operation results ZERO then zero flag will be set )
+JNZ - Jump if Zero flag is not set
+JZ   - Jump if Zero flag is set
+JC   - Jump if Carry flag is set
+(carry flag will be set if the current operation produces carry)
+
+syntax: JNZ (location in code where it should jump)
+If the condition is fullfilled then instruction jumps to the specified location
+
+eg:           MVI B,09h
+     LOOP: (BODY OF THE LOOP)
+                 DCR B
+                JNZ  LOOP
+     
+This instruction performs logical AND operation on A-register with 08h(10000000).
+
+
+
+
+
+
+
+
+
+
+
+SIMULATION RESULTS:
+
+Before executing the instructions
+
+
+
+
+
+After executing the instruction
