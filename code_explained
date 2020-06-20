@@ -187,12 +187,3 @@ This instruction performs logical AND operation on A-register with 08h(10000000)
 
 
 
-SIMULATION RESULTS:
-
-Before executing the instructions
-
-
-
-
-
-After executing the instruction
